@@ -1,0 +1,1 @@
+print("Fast api app")
