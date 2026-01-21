@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field, validator
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import uvicorn
 from supabase import create_client, Client
