@@ -12,7 +12,13 @@ SUPABASE_KEY = "sb_publishable_-y2Gqu0uX-HsUO6v6Zc7ug_RFI1jsnK"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = FastAPI(title="Dentist Website API")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],        # allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],        # allow all HTTP methods
+    allow_headers=["*"],        # allow all headers
+)
 # --- Helper Functions ---
 def verify_password(plain_password, hashed_password):
     # bcrypt.checkpw expects bytes
