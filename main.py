@@ -10,11 +10,18 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import datetime
 import pytz
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # --- Configuration ---
 # REPLACE THESE WITH YOUR ACTUAL SUPABASE CREDENTIALS
-SUPABASE_URL = "https://mdxblkkzyblhiileioxt.supabase.co"
-SUPABASE_KEY = "sb_publishable_-y2Gqu0uX-HsUO6v6Zc7ug_RFI1jsnK" 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY in .env file")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Google Calendar Configuration
@@ -23,7 +30,9 @@ SERVICE_ACCOUNT_FILE = 'tonal-shore-434209-q7-fe014e05820d.json'
 # The ID of the calendar to add events to. 'primary' usually refers to the service account's calendar.
 # If you want to add to your personal calendar, you must share that calendar with the service account email
 # and use your specific Calendar ID (e.g., your gmail address) here.
-CALENDAR_ID = '98696f3692fc8e8139038fc22ecf7e7ac38f0a00dd2ff409002bbbb1865f8d35@group.calendar.google.com' 
+CALENDAR_ID = os.getenv("CALENDAR_ID")
+if not CALENDAR_ID:
+    print("WARNING: CALENDAR_ID not found in .env file")
 
 app = FastAPI(title="Dentist Website API")
 app.add_middleware(
@@ -224,7 +233,7 @@ def book_appointment(appt: AppointmentCreate):
         }
 
         # ==============================
-        # 4. CREATE GOOGLE EVENT
+        # 4. CREATE GOOGLE EVENT (Admin Calendar)
         # ==============================
         service = get_calendar_service()
         google_event_id = None
