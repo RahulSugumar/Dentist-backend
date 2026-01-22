@@ -141,27 +141,6 @@ def login_user(user: UserLogin):
     except Exception as e:
         print(f"Error: {e}")
         if isinstance(e, HTTPException):
-            raise e
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/book-appointment")
-def book_appointment(appt: AppointmentCreate):
-    try:
-        # 1. Validate Date and Time
-        try:
-            start_dt = datetime.datetime.strptime(f"{appt.appointment_date} {appt.appointment_time}", "%Y-%m-%d %H:%M")
-            end_dt = start_dt + datetime.timedelta(hours=1)
-            
-            # Format explicitly for ISO 8601
-            start_iso = start_dt.isoformat()
-            end_iso = end_dt.isoformat()
-        except ValueError:
-             raise HTTPException(status_code=400, detail="Invalid date or time format")
-        
-        # 2. Check for Conflicts in Database
-        # Query for any appointment on the same date and time that is NOT cancelled
-        existing_appt = supabase.table("appointments").select("*").eq("appointment_date", appt.appointment_date).eq("appointment_time", appt.appointment_time).neq("status", "cancelled").execute()
-        
         if existing_appt.data:
              # Calculate next available slot (1 hour later)
              next_slot = start_dt + datetime.timedelta(hours=1)
